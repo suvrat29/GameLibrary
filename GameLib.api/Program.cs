@@ -50,6 +50,7 @@ public class Program
                     AutoRefreshToken = true,
                     AutoConnectRealtime = true
                 }));
+        builder.Services.AddScoped<SupabaseClientService>();
 
         #endregion
 
