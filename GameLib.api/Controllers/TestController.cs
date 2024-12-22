@@ -41,7 +41,7 @@ public class TestController(ILogger<TestController> logger, ISessionService sess
 
     [HttpDelete("{id}", Name = "DeleteTestByIdAsync")]
     public Task<IActionResult> DeleteAsync(Guid id) =>
-        CallServiceMethodAsync(() => _testService.DeleteItemByIdAsync(user!, id), HttpStatusCode.NoContent);
+        CallServiceMethodAsync(() => _testService.DeleteItemByIdAsync(user!, id));
 
     #endregion
 

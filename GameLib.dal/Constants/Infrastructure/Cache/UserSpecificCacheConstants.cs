@@ -3,4 +3,5 @@
 public static class UserSpecificCacheConstants
 {
     public const string USER_PROFILE = "UserProfile";
+    public const string USER_AUTH_SESSION = "UserSession";
 }

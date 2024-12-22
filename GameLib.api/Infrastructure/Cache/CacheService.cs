@@ -32,7 +32,7 @@ public interface IUserSpecificCacheService
     /// Removes a user specific cache item.
     /// </summary>
     /// <param name="key">User specific cache key constant.</param>
-    Task RemoveFromAsync(string key);
+    Task RemoveFromCacheAsync(string key);
 }
 
 internal sealed class CacheService : IUserSpecificCacheService
@@ -100,7 +100,7 @@ internal sealed class CacheService : IUserSpecificCacheService
         }
     }
 
-    public async Task RemoveFromAsync(string key)
+    public async Task RemoveFromCacheAsync(string key)
     {
         if (IsUserSpecificOperationAllowed())
         {

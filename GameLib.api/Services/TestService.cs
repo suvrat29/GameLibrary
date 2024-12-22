@@ -1,8 +1,9 @@
-﻿using GameLib.dal.Models;
+﻿using GameLib.api.BaseClasses;
+using GameLib.api.Infrastructure.Session;
+using GameLib.dal.Models;
 using GameLib.dal.ViewModels.Infrastructure;
 using GameLib.dal.ViewModels.Request;
 using GameLib.dal.ViewModels.Response;
-using Supabase;
 
 namespace GameLib.api.Services;
 
@@ -10,16 +11,16 @@ public interface ITestService
 {
     Task<TestResponse?> GetItemByIdAsync(UserModel user, Guid id);
     Task<Guid?> CreateItemAsync(UserModel user, CreateTestRequest request);
-    Task<bool> DeleteItemByIdAsync(UserModel user, Guid id);
+    Task DeleteItemByIdAsync(UserModel user, Guid id);
 }
 
-internal sealed class TestService(Client client) : ITestService
+internal sealed class TestService(SupabaseClientService clientService) : BaseService(clientService), ITestService
 {
     #region ITestService Implementation
 
     public async Task<TestResponse?> GetItemByIdAsync(UserModel user, Guid id)
     {
-        var tableData = await client.From<TestTable>()
+        var tableData = await _client.From<TestTable>()
             .Where(t => t.Uuid == id)
             .Get();
 
@@ -48,20 +49,18 @@ internal sealed class TestService(Client client) : ITestService
             CreatedBy = user.Uuid,
         };
 
-        var response = await client.From<TestTable>().Insert(data);
+        var response = await _client.From<TestTable>().Insert(data);
 
         var newNewsLetter = response.Models.First();
         return newNewsLetter.Uuid;
     }
 
-    public async Task<bool> DeleteItemByIdAsync(UserModel user, Guid id)
+    public Task DeleteItemByIdAsync(UserModel user, Guid id)
     {
-        await client
+        return _client
             .From<TestTable>()
             .Where(t => t.Uuid == id)
             .Delete();
-
-        return true;
     }
 
     #endregion
