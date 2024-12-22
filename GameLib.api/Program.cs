@@ -11,7 +11,6 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        builder.Configuration.SetBasePath(builder.Configuration["SecretsPath"]!).AddJsonFile("secrets.json");
         
         // Add services to the container.
         builder.Services.AddControllers();
