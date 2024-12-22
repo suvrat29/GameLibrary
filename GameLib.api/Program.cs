@@ -1,6 +1,7 @@
 using System.Text;
 using GameLib.api.Infrastructure.Cache;
 using GameLib.api.Infrastructure.Session;
+using GameLib.api.Services;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
@@ -51,6 +52,8 @@ public class Program
                 }));
 
         builder.Services.AddTransient<ISessionService, SessionService>();
+
+        builder.Services.AddTransient<ITestService, TestService>();
 
         var app = builder.Build();
 

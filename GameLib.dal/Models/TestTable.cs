@@ -8,6 +8,8 @@ public class TestTable: BaseModel
 {
     [PrimaryKey("id", false)]
     public long Id { get; set; }
+    [PrimaryKey("uuid", false)]
+    public Guid Uuid { get; set; }
     [Column("name")]
     public string Name { get; set; } = "";
     [Column("description")]
