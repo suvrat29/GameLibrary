@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameLib.api", "GameLib.api\GameLib.api.csproj", "{267C32A8-A10E-4AC3-A8BC-0A4F188CAE4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameLib.dal", "GameLib.dal\GameLib.dal.csproj", "{86D27CDA-E9FB-406A-8B50-C21A7D3920B4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{267C32A8-A10E-4AC3-A8BC-0A4F188CAE4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{267C32A8-A10E-4AC3-A8BC-0A4F188CAE4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{267C32A8-A10E-4AC3-A8BC-0A4F188CAE4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{267C32A8-A10E-4AC3-A8BC-0A4F188CAE4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86D27CDA-E9FB-406A-8B50-C21A7D3920B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86D27CDA-E9FB-406A-8B50-C21A7D3920B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86D27CDA-E9FB-406A-8B50-C21A7D3920B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86D27CDA-E9FB-406A-8B50-C21A7D3920B4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
