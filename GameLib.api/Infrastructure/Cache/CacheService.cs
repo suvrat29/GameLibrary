@@ -73,7 +73,7 @@ internal sealed class CacheService : IUserSpecificCacheService
     {
         if (IsUserSpecificOperationAllowed())
         {
-            return await _redisCache!.GetAsync<T>(key);
+            return await _redisCache!.GetAsync<T>($"{USER_CACHE_KEY}_{key}");
         }
         else
         {
@@ -87,11 +87,11 @@ internal sealed class CacheService : IUserSpecificCacheService
         {
             if (expiresIn.HasValue)
             {
-                await _redisCache!.SetAsync(key, value, expiresIn.Value);
+                await _redisCache!.SetAsync($"{USER_CACHE_KEY}_{key}", value, expiresIn.Value);
             }
             else
             {
-                await _redisCache!.SetAsync(key, value);
+                await _redisCache!.SetAsync($"{USER_CACHE_KEY}_{key}", value);
             }
         }
         else
@@ -104,7 +104,7 @@ internal sealed class CacheService : IUserSpecificCacheService
     {
         if (IsUserSpecificOperationAllowed())
         {
-            await _redisCache!.RemoveAsync(key);
+            await _redisCache!.RemoveAsync($"{USER_CACHE_KEY}_{key}");
         }
         else
         {
