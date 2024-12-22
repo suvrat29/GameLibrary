@@ -1,4 +1,5 @@
-﻿using GameLib.api.Infrastructure.Session;
+﻿using GameLib.api.BaseClasses;
+using GameLib.api.Infrastructure.Session;
 using GameLib.dal.Models;
 using GameLib.dal.ViewModels.Infrastructure;
 using GameLib.dal.ViewModels.Request;
@@ -10,21 +11,20 @@ using Supabase;
 namespace GameLib.api.Controllers;
 
 [Authorize]
-[ApiController]
 [Route("[controller]")]
-public class TestController(ISessionService sessionService, Client client)
-    : ControllerBase
+public class TestController(ILogger<TestController> logger, ISessionService sessionService, Client client)
+    : BaseController<TestController>(logger)
 {
     [HttpGet("{id}", Name = "GetTestByIdAsync")]
     public async Task<IActionResult> GetAsync(long id)
     {
-        UserModel? user = sessionService.GetUser();
+        UserModel? user = await sessionService.GetUserAsync();
 
         if (user == null)
         {
             return Unauthorized();
         }
-        
+
         var tableData = await client.From<TestTable>()
             .Where(t => t.Id == id)
             .Get();
@@ -44,20 +44,20 @@ public class TestController(ISessionService sessionService, Client client)
             ReadTime = data.ReadTime,
             CreatedAt = data.CreatedAt,
         };
-        
+
         return Ok(response);
     }
 
     [HttpPost(Name = "PostTestDataAsync")]
     public async Task<IActionResult> PostAsync(CreateTestRequest request)
     {
-        UserModel? user = sessionService.GetUser();
+        UserModel? user = await sessionService.GetUserAsync();
 
         if (user == null)
         {
             return Unauthorized();
         }
-        
+
         var data = new TestTable
         {
             Name = request.Name,
@@ -70,20 +70,20 @@ public class TestController(ISessionService sessionService, Client client)
         var response = await client.From<TestTable>().Insert(data);
 
         var newNewsLetter = response.Models.First();
-        
+
         return Ok(newNewsLetter.Id);
     }
 
     [HttpDelete("{id}", Name = "DeleteTestByIdAsync")]
     public async Task<IActionResult> DeleteAsync(long id)
     {
-        UserModel? user = sessionService.GetUser();
+        UserModel? user = await sessionService.GetUserAsync();
 
         if (user == null)
         {
             return Unauthorized();
         }
-        
+
         await client
             .From<TestTable>()
             .Where(t => t.Id == id)

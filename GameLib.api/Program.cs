@@ -1,7 +1,9 @@
 using System.Text;
+using GameLib.api.Infrastructure.Cache;
 using GameLib.api.Infrastructure.Session;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 using Supabase;
 
 namespace GameLib.api;
@@ -11,14 +13,20 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        
+
         // Add services to the container.
         builder.Services.AddControllers();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
-        
+
         builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-        
+
+        builder.Services.AddSingleton<IConnectionMultiplexer>(
+            ConnectionMultiplexer.Connect(builder.Configuration["Cache:ConnectionString"]!));
+        builder.Services.AddHttpClient();
+        builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
+        builder.Services.AddScoped<IUserSpecificCacheService, CacheService>();
+
         builder.Services.AddAuthorization();
         byte[] bytes = Encoding.UTF8.GetBytes(builder.Configuration["Authentication:JwtBearer:SigningKey"]!);
         builder.Services.AddAuthentication().AddJwtBearer(options =>
@@ -41,7 +49,7 @@ public class Program
                     AutoRefreshToken = true,
                     AutoConnectRealtime = true
                 }));
-        
+
         builder.Services.AddTransient<ISessionService, SessionService>();
 
         var app = builder.Build();
