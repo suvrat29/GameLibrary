@@ -18,7 +18,7 @@ public class TestController(ILogger<TestController> logger, ISessionService sess
     [HttpGet("{id}", Name = "GetTestByIdAsync")]
     public async Task<IActionResult> GetAsync(long id)
     {
-        UserModel? user = sessionService.GetUser();
+        UserModel? user = await sessionService.GetUserAsync();
 
         if (user == null)
         {
@@ -51,7 +51,7 @@ public class TestController(ILogger<TestController> logger, ISessionService sess
     [HttpPost(Name = "PostTestDataAsync")]
     public async Task<IActionResult> PostAsync(CreateTestRequest request)
     {
-        UserModel? user = sessionService.GetUser();
+        UserModel? user = await sessionService.GetUserAsync();
 
         if (user == null)
         {
@@ -77,7 +77,7 @@ public class TestController(ILogger<TestController> logger, ISessionService sess
     [HttpDelete("{id}", Name = "DeleteTestByIdAsync")]
     public async Task<IActionResult> DeleteAsync(long id)
     {
-        UserModel? user = sessionService.GetUser();
+        UserModel? user = await sessionService.GetUserAsync();
 
         if (user == null)
         {

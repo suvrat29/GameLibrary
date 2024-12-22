@@ -1,6 +1,5 @@
-﻿using GameLib.api.Infrastructure.Session;
+﻿using GameLib.api.Utilities;
 using GameLib.dal.Constants.Infrastructure.Cache;
-using GameLib.dal.ViewModels.Infrastructure;
 
 namespace GameLib.api.Infrastructure.Cache;
 
@@ -52,18 +51,17 @@ internal sealed class CacheService : IUserSpecificCacheService
 
     #region Constructor
 
-    public CacheService(IHttpContextAccessor context, ISessionService sessionService, IRedisCacheService redisCache)
+    public CacheService(IHttpContextAccessor context, IRedisCacheService redisCache)
     {
         if (context.HttpContext?.User.Identity?.IsAuthenticated ?? false)
         {
-            UserModel? user = sessionService.GetUser();
+            Guid userUuid = TokenUtilities.GetUserUuidFromRequest(context);
 
-            if (user != null)
+            if (userUuid != Guid.Empty)
             {
-                USER_CACHE_KEY = $"{CacheConstants.USER_CACHE_KEY_PREFIX}{user.Uuid}";
+                USER_CACHE_KEY = $"{CacheConstants.USER_CACHE_KEY_PREFIX}{userUuid.ToString()}";
+                _redisCache = redisCache;
             }
-
-            _redisCache = redisCache;
         }
     }
 
