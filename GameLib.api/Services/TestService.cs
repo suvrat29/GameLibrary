@@ -10,7 +10,7 @@ public interface ITestService
 {
     Task<TestResponse?> GetItemByIdAsync(UserModel user, Guid id);
     Task<Guid?> CreateItemAsync(UserModel user, CreateTestRequest request);
-    Task<bool> DeleteItemByIdAsync(UserModel user, Guid id);
+    Task DeleteItemByIdAsync(UserModel user, Guid id);
 }
 
 internal sealed class TestService(Client client) : ITestService
@@ -54,14 +54,12 @@ internal sealed class TestService(Client client) : ITestService
         return newNewsLetter.Uuid;
     }
 
-    public async Task<bool> DeleteItemByIdAsync(UserModel user, Guid id)
+    public Task DeleteItemByIdAsync(UserModel user, Guid id)
     {
-        await client
+        return client
             .From<TestTable>()
             .Where(t => t.Uuid == id)
             .Delete();
-
-        return true;
     }
 
     #endregion

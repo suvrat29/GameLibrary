@@ -1,7 +1,9 @@
 using System.Text;
+using GameLib.api.Infrastructure.Authentication;
 using GameLib.api.Infrastructure.Cache;
 using GameLib.api.Infrastructure.Session;
 using GameLib.api.Services;
+using GameLib.api.Services.Authentication;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
@@ -20,13 +22,7 @@ public class Program
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
 
-        builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-        builder.Services.AddSingleton<IConnectionMultiplexer>(
-            ConnectionMultiplexer.Connect(builder.Configuration["Cache:ConnectionString"]!));
-        builder.Services.AddHttpClient();
-        builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
-        builder.Services.AddScoped<IUserSpecificCacheService, CacheService>();
+        #region Authorization Services
 
         builder.Services.AddAuthorization();
         byte[] bytes = Encoding.UTF8.GetBytes(builder.Configuration["Authentication:JwtBearer:SigningKey"]!);
@@ -41,6 +37,10 @@ public class Program
             };
         });
 
+        #endregion
+
+        #region Supabase Services
+
         builder.Services.AddSingleton<Client>(_ =>
             new Client(
                 builder.Configuration["Supabase:Url"]!,
@@ -51,9 +51,37 @@ public class Program
                     AutoConnectRealtime = true
                 }));
 
+        #endregion
+
+        #region Core Services
+
+        builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+        #endregion
+
+        #region Cache Services
+
+        builder.Services.AddSingleton<IConnectionMultiplexer>(
+            ConnectionMultiplexer.Connect(builder.Configuration["Cache:ConnectionString"]!));
+        builder.Services.AddHttpClient();
+        builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
+        builder.Services.AddScoped<IUserSpecificCacheService, CacheService>();
+
+        #endregion
+
+        #region Session Services
+
         builder.Services.AddTransient<ISessionService, SessionService>();
+        builder.Services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
+        builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
+
+        #endregion
+
+        #region API Services
 
         builder.Services.AddTransient<ITestService, TestService>();
+
+        #endregion
 
         var app = builder.Build();
 
