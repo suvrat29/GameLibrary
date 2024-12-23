@@ -10,14 +10,15 @@ namespace GameLib.api.BaseClasses;
 public class BaseController<T>(ILogger<T> logger, ISessionService sessionService)
     : ControllerBase where T : BaseController<T>
 {
+    #region Variables
+
     private ILogger<T> _logger = logger;
     private ISessionService _sessionService = sessionService;
     protected UserModel? user;
 
-    private ILogger<T> Logger => _logger ??= HttpContext.RequestServices.GetRequiredService<ILogger<T>>();
+    #endregion
 
-    private ISessionService SessionService =>
-        _sessionService ??= HttpContext.RequestServices.GetRequiredService<ISessionService>();
+    #region Executor Methods
 
     public async Task<IActionResult> CallServiceMethodAsync(Func<Task> method,
         bool anonymousCall = false)
@@ -40,7 +41,7 @@ public class BaseController<T>(ILogger<T> logger, ISessionService sessionService
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, ex.Message);
+            _logger.LogError(ex, ex.Message);
             isErrored = true;
         }
 
@@ -56,7 +57,7 @@ public class BaseController<T>(ILogger<T> logger, ISessionService sessionService
         bool anonymousCall = false)
     {
         bool isErrored = false;
-        U result = default(U);
+        U? result = default(U);
 
         if (!anonymousCall && user == null)
         {
@@ -74,7 +75,7 @@ public class BaseController<T>(ILogger<T> logger, ISessionService sessionService
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, ex.Message);
+            _logger.LogError(ex, ex.Message);
             isErrored = true;
         }
 
@@ -100,5 +101,11 @@ public class BaseController<T>(ILogger<T> logger, ISessionService sessionService
         }
     }
 
-    private Task<UserModel?> FetchUserAsync() => SessionService.GetUserAsync();
+    #endregion
+
+    #region Helper Methods
+
+    private Task<UserModel?> FetchUserAsync() => _sessionService.GetUserAsync();
+
+    #endregion
 }
