@@ -1,7 +1,12 @@
 ﻿namespace GameLib.dal.ViewModels.Infrastructure.Authentication;
 
-public class LoginRequestVM
+public class AuthenticationRequestVM
 {
     public required string email { get; set; }
     public required string password { get; set; }
+}
+
+public class TokenRefreshRequestVM
+{
+    public required string refresh_token { get; set; }
 }
