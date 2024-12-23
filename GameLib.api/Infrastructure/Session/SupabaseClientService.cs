@@ -19,9 +19,10 @@ internal sealed class SupabaseClientService(
     {
         if (_supabaseClient.Auth.CurrentSession == null || _supabaseClient.Auth.CurrentUser == null)
         {
-            Supabase.Gotrue.Session? existingSession =
-                await _cacheService.GetFromCacheAsync<Supabase.Gotrue.Session?>(
-                    UserSpecificCacheConstants.USER_AUTH_SESSION);
+            Supabase.Gotrue.Session? existingSession = _cacheService.IsServiceAvailable()
+                ? await _cacheService.GetFromCacheAsync<Supabase.Gotrue.Session?>(
+                    UserSpecificCacheConstants.USER_AUTH_SESSION)
+                : null;
 
             if (existingSession is null)
             {
@@ -40,28 +41,13 @@ internal sealed class SupabaseClientService(
 
     public void AddAuthStateChangedListener()
     {
-        _supabaseClient.Auth.AddStateChangedListener(async (sender, changed) =>
+        //TODO: This might be needed when being accessed in conjunction with the client library
+        _supabaseClient.Auth.AddStateChangedListener((_, changed) =>
         {
-            logger.LogInformation($"Auth state changed to: {changed}");
             switch (changed)
             {
-                case Constants.AuthState.SignedIn:
-                    logger.LogInformation("User signed in");
-                    var session = _supabaseClient.Auth.CurrentSession;
-                    if (session != null)
-                    {
-                        await _cacheService.SetInCacheAsync(UserSpecificCacheConstants.USER_AUTH_SESSION, session);
-                    }
-
-                    break;
-                case Constants.AuthState.SignedOut:
-                    logger.LogInformation("User signed out");
-                    if (_supabaseClient.Auth.CurrentSession != null)
-                    {
-                        await _cacheService.RemoveFromCacheAsync(UserSpecificCacheConstants.USER_AUTH_SESSION);
-                    }
-
-                    break;
+                case Constants.AuthState.SignedIn: logger.LogInformation("User signed in"); break;
+                case Constants.AuthState.SignedOut: logger.LogInformation("User signed out"); break;
                 case Constants.AuthState.UserUpdated: logger.LogInformation("User updated"); break;
                 case Constants.AuthState.PasswordRecovery: logger.LogInformation("Password recovery"); break;
                 case Constants.AuthState.TokenRefreshed: logger.LogInformation("Token refreshed"); break;

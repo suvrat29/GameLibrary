@@ -1,6 +1,6 @@
 ﻿namespace GameLib.dal.ViewModels.Infrastructure.Authentication;
 
-public class LoginResponseVM
+public class AuthenticationResponseVM
 {
     public string access_token { get; set; } = "";
     public string token_type { get; set; } = "Bearer";

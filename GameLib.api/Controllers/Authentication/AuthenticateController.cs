@@ -9,19 +9,19 @@ using Microsoft.AspNetCore.Mvc;
 namespace GameLib.api.Controllers.Authentication;
 
 [Route("[controller]")]
-public class LoginController(
-    ILogger<LoginController> logger,
+public class AuthenticateController(
+    ILogger<AuthenticateController> logger,
     ISessionService sessionService,
     IAuthenticationService authService)
-    : BaseController<LoginController>(logger, sessionService)
+    : BaseController<AuthenticateController>(logger, sessionService)
 {
     #region Routes
 
     #region POST Methods
 
     [AllowAnonymous]
-    [HttpPost(Name = "LoginAsync")]
-    public Task<IActionResult> LoginAsync(LoginRequestVM credentials) =>
+    [HttpPost("login", Name = "LoginAsync")]
+    public Task<IActionResult> LoginAsync(AuthenticationRequestVM credentials) =>
         CallServiceMethodAsync(() => authService.LoginAsync(credentials), HttpStatusCode.OK, true);
 
     [HttpPost("logout", Name = "LogoutAsync")]

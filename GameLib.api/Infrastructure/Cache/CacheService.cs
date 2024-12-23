@@ -33,6 +33,8 @@ public interface IUserSpecificCacheService
     /// </summary>
     /// <param name="key">User specific cache key constant.</param>
     Task RemoveFromCacheAsync(string key);
+
+    bool IsServiceAvailable();
 }
 
 internal sealed class CacheService : IUserSpecificCacheService
@@ -65,6 +67,15 @@ internal sealed class CacheService : IUserSpecificCacheService
         }
     }
 
+    public CacheService(IRedisCacheService redisCache, Guid userUuid, bool serviceOverride = false)
+    {
+        if (userUuid != Guid.Empty && serviceOverride)
+        {
+            USER_CACHE_KEY = $"{CacheConstants.USER_CACHE_KEY_PREFIX}{userUuid.ToString()}";
+            _redisCache = redisCache;
+        }
+    }
+
     #endregion
 
     #region IUserSpecificCacheService Implementation
@@ -81,7 +92,7 @@ internal sealed class CacheService : IUserSpecificCacheService
         }
     }
 
-    public async Task SetInCacheAsync<T>(string key, T value, long? expiresIn)
+    public async Task SetInCacheAsync<T>(string key, T value, long? expiresIn = null)
     {
         if (IsUserSpecificOperationAllowed())
         {
@@ -110,6 +121,11 @@ internal sealed class CacheService : IUserSpecificCacheService
         {
             throw new Exception(CacheConstants.USER_CACHE_UNAUTHORIZED_MESSAGE);
         }
+    }
+
+    public bool IsServiceAvailable()
+    {
+        return _redisCache != null;
     }
 
     #endregion
