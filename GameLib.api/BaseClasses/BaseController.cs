@@ -57,7 +57,7 @@ public class BaseController<T>(ILogger<T> logger, ISessionService sessionService
         bool anonymousCall = false)
     {
         bool isErrored = false;
-        U? result = default(U);
+        U? result = default;
 
         if (!anonymousCall && user == null)
         {

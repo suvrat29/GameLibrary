@@ -67,6 +67,19 @@ internal sealed class UserAuthenticationService(
         try
         {
             logger.LogInformation($"Old refresh token: {refreshToken.refresh_token}");
+            if (_client.Auth.CurrentSession == null)
+            {
+                if (!string.IsNullOrWhiteSpace(refreshToken.access_token) &&
+                    !string.IsNullOrWhiteSpace(refreshToken.refresh_token))
+                {
+                    await _client.Auth.SetSession(refreshToken.access_token, refreshToken.refresh_token);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
             await _client.Auth.RefreshToken();
             var session = _client.Auth.CurrentSession;
 
