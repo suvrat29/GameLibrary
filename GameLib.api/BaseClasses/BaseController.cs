@@ -12,8 +12,8 @@ public class BaseController<T>(ILogger<T> logger, ISessionService sessionService
 {
     #region Variables
 
-    private ILogger<T> _logger = logger;
-    private ISessionService _sessionService = sessionService;
+    private readonly ILogger<T> _logger = logger;
+    private readonly ISessionService _sessionService = sessionService;
     protected UserModel? user;
 
     #endregion
@@ -53,7 +53,7 @@ public class BaseController<T>(ILogger<T> logger, ISessionService sessionService
         return Ok();
     }
 
-    public async Task<IActionResult> CallServiceMethodAsync<U>(Func<Task<U>> method, HttpStatusCode expectedStatusCode,
+    protected async Task<IActionResult> CallServiceMethodAsync<U>(Func<Task<U>> method, HttpStatusCode expectedStatusCode,
         bool anonymousCall = false)
     {
         bool isErrored = false;
