@@ -2,8 +2,10 @@ using System.Text;
 using GameLib.api.Infrastructure.Authentication;
 using GameLib.api.Infrastructure.Cache;
 using GameLib.api.Infrastructure.Session;
+using GameLib.api.Infrastructure.SystemComponent;
 using GameLib.api.Services;
 using GameLib.api.Services.Authentication;
+using GameLib.api.Services.StoreSource;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
@@ -11,14 +13,17 @@ using Supabase;
 
 namespace GameLib.api;
 
-public class Program
+public static class Program
 {
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
-        builder.Services.AddControllers();
+        builder.Services.AddControllers(options =>
+        {
+            options.InputFormatters.Insert(0, JsonPatchFormatter.GetJsonPatchInputFormatter());
+        });
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
 
@@ -81,6 +86,7 @@ public class Program
         #region API Services
 
         builder.Services.AddTransient<ITestService, TestService>();
+        builder.Services.AddTransient<IStoreSourceService, StoreSourceService>();
 
         #endregion
 
