@@ -1,4 +1,94 @@
 @HostAddress = 
 @AccessToken = 
+@RefreshToken =
+@TestRecordId = 
+@StoreSourceRecordId = 
+@Username = 
+@Password = 
+
+POST /authenticate/login
+Host: {{HostAddress}}
+Content-Type: application/json
+
+{
+  "email": "{{Username}}",
+  "password": "{{Password}}"
+}
+
+###
+
+POST /token/refresh
+Host: {{HostAddress}}
+Content-Type: application/json
+Authorization: {{AccessToken}}
+
+{
+  "access_token": "{{AccessToken}}",
+  "refresh_token": "{{RefreshToken}}"
+}
+
+###
+
+POST /authenticate/logout
+Host: {{HostAddress}}
+Authorization: {{AccessToken}}
+
+###
+
+POST /test
+Host: {{HostAddress}}
+Content-Type: application/json
+Authorization: {{AccessToken}}
+
+{
+  "name": "MNW 29",
+  "description": "description something",
+  "readTime": 6
+}
+
+###
+
+GET /test/{{TestRecordId}}
+Host: {{HostAddress}}
+Authorization: {{AccessToken}}
+
+###
+
+POST /store-source/add-store-source
+Host: {{HostAddress}}
+Content-Type: application/json
+Authorization: {{AccessToken}}
+
+{
+  "Name": "Steam",
+  "Icon": ""
+}
+
+###
+
+GET /store-source/get-sources?page=0&limit=100
+Host: {{HostAddress}}
+Authorization: {{AccessToken}}
+
+###
+
+PATCH /store-source/update-store-source?recordId={{StoreSourceRecordId}}
+Host: {{HostAddress}}
+Content-Type: application/json-patch+json
+Authorization: {{AccessToken}}
+
+[
+  {
+    "op": "replace",
+    "path": "/name",
+    "value": "Steam - Updated"
+  }
+]
+
+###
+
+POST /store-source/delete-store-source?recordId={{StoreSourceRecordId}}
+Host: {{HostAddress}}
+Authorization: {{AccessToken}}
 
 ###
