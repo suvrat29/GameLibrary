@@ -35,31 +35,43 @@ internal sealed class SessionService(IHttpContextAccessor context, IUserSpecific
     {
         if (Convert.ToBoolean(_context.HttpContext?.User.Identity?.IsAuthenticated))
         {
-            UserModel? user = skipCache
-                ? null
-                : await _cacheService.GetFromCacheAsync<UserModel>(UserSpecificCacheConstants.USER_PROFILE) ?? null;
+            if (!skipCache && !_cacheService.IsServiceAvailable())
+            {
+                return null;
+            }
+
+            var userCacheTask = _cacheService.GetFromCacheAsync<UserModel>(UserSpecificCacheConstants.USER_PROFILE);
+            var userSessionTask =
+                _cacheService.GetFromCacheAsync<UserModel>(UserSpecificCacheConstants.USER_AUTH_SESSION);
+
+            await Task.WhenAll(userCacheTask, userSessionTask);
+
+            if (userSessionTask.Result == null)
+            {
+                return null;
+            }
+
+            UserModel? user = userCacheTask.Result;
 
             if (user != null)
             {
                 return user;
             }
-            else
+
+            (string, Guid) userDetails = TokenUtilities.GetUserDetailsFromRequest(_context);
+
+            if (!string.IsNullOrWhiteSpace(userDetails.Item1) && userDetails.Item2 != Guid.Empty)
             {
-                (string, Guid) userDetails = TokenUtilities.GetUserDetailsFromRequest(_context);
-
-                if (!string.IsNullOrWhiteSpace(userDetails.Item1) && userDetails.Item2 != Guid.Empty)
+                user = new()
                 {
-                    user = new()
-                    {
-                        Email = userDetails.Item1,
-                        Uuid = userDetails.Item2
-                    };
+                    Email = userDetails.Item1,
+                    Uuid = userDetails.Item2
+                };
 
-                    await _cacheService.SetInCacheAsync(
-                        UserSpecificCacheConstants.USER_PROFILE, user);
+                await _cacheService.SetInCacheAsync(
+                    UserSpecificCacheConstants.USER_PROFILE, user);
 
-                    return user;
-                }
+                return user;
             }
         }
 

@@ -20,7 +20,7 @@ public class TokenController(
 
     [HttpPost("refresh", Name = "RefreshTokenAsync")]
     public Task<IActionResult> RefreshTokenAsync(TokenRefreshRequestVM refreshToken) =>
-        CallServiceMethodAsync(() => authService.RefreshTokenAsync(user!, refreshToken), HttpStatusCode.OK);
+        CallServiceMethodAsync(() => authService.RefreshTokenAsync(user!, refreshToken), HttpStatusCode.OK, true);
 
     #endregion
 
